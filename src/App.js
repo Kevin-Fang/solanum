@@ -58,7 +58,7 @@ class App extends Component {
     // Add space listener to toggle time
     document.addEventListener("keydown", this.spaceFunction, false);
     // set title to the time
-    document.title = `[${this.getFormattedTime().string}] Solanum`
+    document.title = `🍅 Solanum`
     // fade into main screen
     setTimeout(() => {
       this.setState({
@@ -229,8 +229,9 @@ class App extends Component {
           key={key}
           anchorOrigin={{
             vertical: 'bottom',
-            horizontal: 'left',
+            horizontal: 'center',
           }}
+          style={{marginBottom: 20}}
           open={this.state.snackbarOpen}
           onExited={this.state.handleExited}
           autoHideDuration={1000}
@@ -259,7 +260,8 @@ class App extends Component {
           BTC: 3M4TYqtT5vCL7xNQoeSaU1GyQhb3z7NNLo<br/>
           ETH: 0xdA3256801BB158BCbC3Fb12fA471D854ee64A31E<br/>
           LTC: MPvUK7vt3U45SUqJT3XHHhMGMMJ3oPbA9s<br/><br/>
-          Donate to help pay for server and domain costs! Solanum is and will always remain free.
+          Donate to help pay for server and domain costs! Solanum is and will always be free.<br/>
+          Solanum is open source and available on <a href="https://github.com/kevin-fang/solanum">GitHub</a>
         </div>
     )
   }
@@ -401,7 +403,7 @@ class App extends Component {
             Solanum
           </div>
           <div style={{margin: 10}}>
-            <i>Solanum lycopersicum</i>. Pomodoro. 🍅
+            <i>Solanum lycopersicum</i>. A better Pomodoro. 🍅
           </div>
           <Tabs 
             className="Tabs"
@@ -423,7 +425,7 @@ class App extends Component {
             alignItems="center"
             justify="center"
             style={{marginTop: 10}}>
-            <Paper className="Timer" style={{paddingLeft: 25, paddingRight: 30, paddingBottom: 15}}>
+            <Paper className="Timer" style={{paddingLeft: 25, paddingRight: 30, paddingBottom: 10}}>
               {this.getMinutesDisplay()}
               <div style={{fontSize: "13em", color: '#648baf', fontFamily: 'lato'}}>:</div>
               {this.getSecondsDisplay()}
