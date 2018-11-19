@@ -1,32 +1,24 @@
 .App {
   text-align: center;
+  height: stretch;
+  /*background-image: url("https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg?cs=srgb&dl=abstract-background-blur-255379.jpg&fm=jpg");*/
+  background-color: white;
+  font-family: Montserrat;
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: #4d4d4d;
+  font-weight: 100;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
+.Tabs {
+  text-align: center;
+  margin-left: 50%;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.Timer {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.Title {
+  font-size: 150;
 }
