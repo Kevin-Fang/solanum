@@ -17,18 +17,30 @@ import './odometer-theme-plaza.css'
 
 let backgroundImages = require('./backgrounds.json').backgrounds
 
+let defaultTimes = {
+  mainTimer: 1500,
+  shorterTimer: 300,
+  longerTimer: 900
+}
+
 class App extends Component {
   snackbarQueue = []
   constructor(props) {
     super(props)
     this.state = {
+      activeTime: 'mainTimer',
+      timers: {
+        mainTimer: defaultTimes['mainTimer'],
+        shorterTimer: defaultTimes['shorterTimer'],
+        longerTimer: defaultTimes['longerTimer']
+      },
       timeLeft: 1500,
       snackbarOpen: false,
       snackbarMessage: "",
       timer: null,
       imageNum: 0,
       activeTab: 0,
-      screenAvailable: false
+      screenAvailable: false,
     }
   }
 
@@ -37,6 +49,7 @@ class App extends Component {
     document.addEventListener("keydown", this.spaceFunction, false);
     // set title to the time
     document.title = `[${this.getFormattedTime().string}] Solanum`
+    // fade into main screen
     setTimeout(() => {
       this.setState({
         screenAvailable: true
@@ -57,6 +70,7 @@ class App extends Component {
     } 
   }
 
+  // toggle time running
   toggleTimer = () => {
     if (this.state.timer === null) {
       this.startTimer()
@@ -65,19 +79,38 @@ class App extends Component {
     }
   }
 
+  // Change a certain timer
+  changeTimer = (name, value, callback) => {
+    let timers = Object.assign(this.state.timers)
+    timers[name] = value
+    this.setState({
+      timers
+    }, callback)
+  }
+
+  // get the current timer's value
+  getCurrentTimer = () => {
+    return this.state.timers[this.state.activeTime]
+  }
+
+  // start the timer
   startTimer = () => {
     // Create timer interval
     if (this.state.timer === null) {
-      let timer = setInterval(() => {
-        this.setState({
-          timeLeft: this.state.timeLeft - 1
-        }, () => {
-          document.title = `[${this.getFormattedTime().string}] Solanum`
+      let timerInterval = setInterval(() => {
+        // save other timer objects
+        this.changeTimer(this.state.activeTime, this.getCurrentTimer() - 1, () => {
+            document.title = `[${this.getFormattedTime().string}] Solanum`
+            if (this.getCurrentTimer() < 0) {
+              alert("Time's up!")
+              this.resetTime()
+            }
         })
       }, 1000)
+      // open timer
       this.openSnackbar("Timer started")
       this.setState({
-        timer: timer,
+        timer: timerInterval,
       })
     } else {
       this.openSnackbar("Timer already running")
@@ -86,40 +119,51 @@ class App extends Component {
 
   stopTimer = () => {
     // Remove timer interval
-    clearInterval(this.state.timer)
-    this.setState({
-      timer: null
-    })
-    this.openSnackbar("Timer stopped")
+    if (this.state.timer !== null) {
+      clearInterval(this.state.timer)
+      this.setState({
+        timer: null
+      })
+      this.openSnackbar("Timer stopped")
+    }
   }
 
+  // return a string formatted time with minutes, seconds, and a complete string
   getFormattedTime = () => {
-    let minutes = Math.floor(this.state.timeLeft / 60)
-    let seconds = String(Math.floor(this.state.timeLeft - minutes * 60))
+    let timeLeft = this.getCurrentTimer()
     let padTime = (time) => {
       while (time.length < 2)
           time = "0" + time;
       return time
     }
+    let minutes = padTime(String(Math.floor(timeLeft / 60)))
+    let seconds = padTime(String(Math.floor(timeLeft - minutes * 60)))
     return {
       minutes: minutes,
-      seconds: padTime(seconds),
-      string: `${minutes}:${padTime(seconds)}`
+      seconds: seconds,
+      string: `${minutes}:${seconds}`
     }
   }
 
   getSecondsDisplay = () => {
     let seconds = this.getFormattedTime().seconds
-    if (seconds.length === 2) {
-      return (
-        <div>
-          <Odometer style={{margin: 0}} value={seconds[0]}/>
-          <Odometer style={{margin: 0}} value={seconds[1]}/>
-        </div>
-      )
-    } else {
+    return (
+      <div>
+        <Odometer style={{margin: 0}} value={seconds[0]}/>
+        <Odometer style={{margin: 0}} value={seconds[1]}/>
+      </div>
+    )
+  }
 
-    }
+  getMinutesDisplay = () => {
+    let minutes = this.getFormattedTime().minutes
+    console.log(minutes)
+    return (
+      <div>
+        <Odometer style={{margin: 0}} value={minutes[0]}/>
+        <Odometer style={{margin: 0}} value={minutes[1]}/>
+      </div>
+    )
   }
 
   openSnackbar = (message) => {
@@ -214,14 +258,18 @@ class App extends Component {
 
   resetTime = () => {
     this.stopTimer()
-    this.setState({
-      timeLeft: 1500
-    })
+    // reset to default time for now.
+    this.changeTimer(this.state.activeTime, defaultTimes[this.state.activeTime])
   }
 
   handleTabChange = (event, value) => {
+    this.stopTimer()
+    let timers = ["mainTimer", "shorterTimer", "longerTimer"]
     this.setState({
-      activeTab: value
+      activeTab: value,
+      activeTime: timers[value]
+    }, () => {
+      document.title = `[${this.getFormattedTime().string}] Solanum`
     })
   }
 
@@ -257,14 +305,14 @@ class App extends Component {
             alignItems="center"
             justify="center"
             style={{marginTop: 10}}>
-            <Paper className="Timer" style={{paddingLeft: 25, paddingRight: 30}}>
-                <Odometer value={this.getFormattedTime().minutes}/>
-                <div style={{fontSize: "13em", color: '#648baf', fontFamily: 'lato'}}>:</div>
-                {this.getSecondsDisplay()}
+            <Paper className="Timer" style={{paddingLeft: 25, paddingRight: 30, paddingBottom: 15}}>
+              {this.getMinutesDisplay()}
+              <div style={{fontSize: "13em", color: '#648baf', fontFamily: 'lato'}}>:</div>
+              {this.getSecondsDisplay()}
             </Paper>
           </Grid>
           <Button color="primary" onClick={this.resetTime} style={{margin: 10}}>Reset</Button>
-          <Button color="primary" onClick={this.toggleTimer}>{this.state.timer === null ? "Start timer" : "Stop timer"}</Button>
+          <Button color={this.state.timer === null ? "primary" : "secondary"} onClick={this.toggleTimer}>{this.state.timer === null ? "Start timer" : "Stop timer"}</Button>
           <Button color="primary" onClick={this.changeTime} style={{margin: 10}}>Change time</Button>
           <br/>
           <Button style={{margin: 10, position: 'absolute', top: 0, right: 0}} onClick={this.incBackground}>Change background</Button>
