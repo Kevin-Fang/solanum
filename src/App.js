@@ -10,6 +10,12 @@ import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import Paper from '@material-ui/core/Paper'
 import Grid from '@material-ui/core/Grid'
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import TextField from '@material-ui/core/TextField';
 
 // Odometer stuff
 import Odometer from 'react-odometerjs'
@@ -41,6 +47,10 @@ class App extends Component {
       imageNum: 0,
       activeTab: 0,
       screenAvailable: false,
+      dialogOpen: false,
+      mainTimerChangeValue: defaultTimes['mainTimer'] / 60,
+      shortTimerChangeValue: defaultTimes['shorterTimer'] / 60,
+      longTimerChangeValue: defaultTimes['longerTimer'] / 60
     }
   }
 
@@ -55,6 +65,10 @@ class App extends Component {
         screenAvailable: true
       })
     }, 200)
+    backgroundImages.map(img => {
+      let imgComponent = new Image()
+      imgComponent.src = img
+    })
     //document.addEventListener("keyup", this.spaceFunction, false);
   }
 
@@ -126,6 +140,12 @@ class App extends Component {
       })
       this.openSnackbar("Timer stopped")
     }
+  }
+
+  changeDefaultTime = () => {
+    this.setState({
+      dialogOpen: true
+    })
   }
 
   // return a string formatted time with minutes, seconds, and a complete string
@@ -224,6 +244,26 @@ class App extends Component {
       )
   }
 
+  getDonateButton = () => {
+    return (
+        <div style={{position: 'absolute', bottom: 10, left: 10, textAlign: 'left', fontSize: 12}}>
+          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" style={{left: 10}}>
+            <input type="hidden" name="business" value="kevinzfang@gmail.com"/>
+            <input type="hidden" name="cmd" value="_donations"/>
+            <input type="hidden" name="item_name" value="SolanumTi.me Donation"/>
+            <input type="hidden" name="item_number" value="<3"/>
+            <input type="hidden" name="currency_code" value="USD"/>
+            <input type="image" name="submit" src="https://mightywriters.org/wp-content/uploads/2016/12/button-PayPal-donate.png" style={{height: 40}} alt="Donate on Paypal"/>
+            <img alt="" width="1" height="1" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" />
+          </form><br/>
+          BTC: 3M4TYqtT5vCL7xNQoeSaU1GyQhb3z7NNLo<br/>
+          ETH: 0xdA3256801BB158BCbC3Fb12fA471D854ee64A31E<br/>
+          LTC: MPvUK7vt3U45SUqJT3XHHhMGMMJ3oPbA9s<br/><br/>
+          Donate to help pay for server and domain costs! Solanum is and will always remain free.
+        </div>
+    )
+  }
+
   incBackground = () => {
     let clear = (callback) => {
       this.setState({
@@ -273,12 +313,90 @@ class App extends Component {
     })
   }
 
+  handleCloseDialog = () => {
+    defaultTimes['mainTimer'] = this.state.mainTimerChangeValue * 60
+    defaultTimes['shorterTimer'] = this.state.shortTimerChangeValue * 60
+    defaultTimes['longerTimer'] = this.state.longTimerChangeValue * 60
+    this.setState({
+      dialogOpen: false
+    })
+  }
+
+  cancelDialog = () => {
+    this.setState({
+      dialogOpen: false
+    })
+  }
+
   render() {
     //console.log(`url(${backgroundImages[this.state.imageNum]})`)
     return (
       <Fade in={this.state.screenAvailable}>
         <div className="App" style={{backgroundImage: `url(${backgroundImages[this.state.imageNum]})`, minWidth: 1000}}>
           {this.getSnackBar()}
+          <Dialog
+            open={this.state.dialogOpen}>
+            <DialogTitle>New time</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Choose new default timer lengths (reset timers to activate):
+              </DialogContentText>
+              <TextField 
+                label="Main Timer"
+                placeholder="(minutes)"
+                margin="dense"
+                autoFocus
+                style={{width: "25%", marginRight: "8%"}}
+                type="number"
+                value={this.state.mainTimerChangeValue}
+                onChange={(e) => {
+                  if (e.target.value > 0 && e.target.value <= 60) {
+                    this.setState({
+                      mainTimerChangeValue: e.target.value
+                    })
+                  }
+                }}
+              />
+              <TextField 
+                label="Shorter Break"
+                placeholder="(minutes)"
+                margin="dense"
+                type="number"
+                style={{width: "25%", marginRight: "8%"}}
+                value={this.state.shortTimerChangeValue}
+                onChange={(e) => {
+                  if (e.target.value > 0) {
+                    this.setState({
+                      shortTimerChangeValue: e.target.value
+                    })
+                  }
+                }}
+              />
+              <TextField 
+                label="Longer Break"
+                placeholder="(minutes)"
+                margin="dense"
+                style={{width: "25%", marginRight: "8%"}}
+                type="number"
+                value={this.state.longTimerChangeValue}
+                onChange={(e) => {
+                  if (e.target.value > 0) {
+                    this.setState({
+                      longTimerChangeValue: e.target.value
+                    })
+                  }
+                }}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={this.cancelDialog} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={this.handleCloseDialog} color="primary">
+                OK
+              </Button>
+            </DialogActions>
+          </Dialog>
           <div className="Title" style={{fontSize: "5em", paddingTop: 40}}>
             Solanum
           </div>
@@ -313,10 +431,10 @@ class App extends Component {
           </Grid>
           <Button color="primary" onClick={this.resetTime} style={{margin: 10}}>Reset</Button>
           <Button color={this.state.timer === null ? "primary" : "secondary"} onClick={this.toggleTimer}>{this.state.timer === null ? "Start timer" : "Stop timer"}</Button>
-          <Button color="primary" onClick={this.changeTime} style={{margin: 10}}>Change time</Button>
+          <Button color="primary" onClick={this.changeDefaultTime} style={{margin: 10}}>Change times</Button>
           <br/>
           <Button style={{margin: 10, position: 'absolute', top: 0, right: 0}} onClick={this.incBackground}>Change background</Button>
-          
+          {this.getDonateButton()}
         </div>
       </Fade>
     );
