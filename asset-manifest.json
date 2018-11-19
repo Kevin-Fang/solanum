@@ -1,7 +1,7 @@
 {
   "main.css": "/solanum/static/css/main.988c272c.chunk.css",
-  "main.js": "/solanum/static/js/main.c607925b.chunk.js",
-  "main.js.map": "/solanum/static/js/main.c607925b.chunk.js.map",
+  "main.js": "/solanum/static/js/main.ca6d0be7.chunk.js",
+  "main.js.map": "/solanum/static/js/main.ca6d0be7.chunk.js.map",
   "static/js/1.f7662243.chunk.js": "/solanum/static/js/1.f7662243.chunk.js",
   "static/js/1.f7662243.chunk.js.map": "/solanum/static/js/1.f7662243.chunk.js.map",
   "runtime~main.js": "/solanum/static/js/runtime~main.c0380104.js",
@@ -9,6 +9,6 @@
   "static/media/logo.svg": "/solanum/static/media/logo.5d5d9eef.svg",
   "static/css/main.988c272c.chunk.css.map": "/solanum/static/css/main.988c272c.chunk.css.map",
   "index.html": "/solanum/index.html",
-  "precache-manifest.2a62e971a20cd98c0dc95f04edf8591d.js": "/solanum/precache-manifest.2a62e971a20cd98c0dc95f04edf8591d.js",
+  "precache-manifest.296400781d7367c5997eebaa3e750ec1.js": "/solanum/precache-manifest.296400781d7367c5997eebaa3e750ec1.js",
   "service-worker.js": "/solanum/service-worker.js"
 }

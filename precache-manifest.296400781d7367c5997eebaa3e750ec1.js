@@ -8,19 +8,19 @@ self.__precacheManifest = [
     "url": "/solanum/static/js/runtime~main.c0380104.js"
   },
   {
-    "revision": "c607925b35038c660aa2",
-    "url": "/solanum/static/js/main.c607925b.chunk.js"
+    "revision": "ca6d0be78bc775d83682",
+    "url": "/solanum/static/js/main.ca6d0be7.chunk.js"
   },
   {
     "revision": "f7662243ff5a0d0b5e7c",
     "url": "/solanum/static/js/1.f7662243.chunk.js"
   },
   {
-    "revision": "c607925b35038c660aa2",
+    "revision": "ca6d0be78bc775d83682",
     "url": "/solanum/static/css/main.988c272c.chunk.css"
   },
   {
-    "revision": "f64aba31b37f97ac7fc414af7a134d76",
+    "revision": "133f0815d22aea17993c88c3ddb82ef7",
     "url": "/solanum/index.html"
   }
 ];
