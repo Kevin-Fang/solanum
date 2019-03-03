@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 // Material-ui components
@@ -20,6 +19,8 @@ import TextField from '@material-ui/core/TextField';
 // Odometer stuff
 import Odometer from 'react-odometerjs'
 import './odometer-theme-plaza.css'
+
+var Sound = require('react-sound').default;
 
 let backgroundImages = require('./backgrounds.json').backgrounds
 
@@ -44,6 +45,7 @@ class App extends Component {
       snackbarOpen: false,
       snackbarMessage: "",
       timer: null,
+      playSound: false,
       imageNum: 0,
       activeTab: 0,
       screenAvailable: false,
@@ -58,16 +60,18 @@ class App extends Component {
     // Add space listener to toggle time
     document.addEventListener("keydown", this.spaceFunction, false);
     // set title to the time
-    document.title = `🍅 Solanum`
+    document.title = `Solanum`
     // fade into main screen
     setTimeout(() => {
       this.setState({
         screenAvailable: true
       })
     }, 200)
+    // preload the images
     backgroundImages.map(img => {
       let imgComponent = new Image()
       imgComponent.src = img
+      return null;
     })
     //document.addEventListener("keyup", this.spaceFunction, false);
   }
@@ -115,9 +119,13 @@ class App extends Component {
         // save other timer objects
         this.changeTimer(this.state.activeTime, this.getCurrentTimer() - 1, () => {
             document.title = `[${this.getFormattedTime().string}] Solanum`
-            if (this.getCurrentTimer() < 0) {
-              alert("Time's up!")
-              this.resetTime()
+            if (this.getCurrentTimer() === 0) {
+              this.setState({
+                playSound: true
+              })
+              } else if (this.getCurrentTimer() < 0) {
+                alert("Time's up!")
+                this.resetTime()
             }
         })
       }, 1000)
@@ -302,6 +310,9 @@ class App extends Component {
     this.stopTimer()
     // reset to default time for now.
     this.changeTimer(this.state.activeTime, defaultTimes[this.state.activeTime])
+    this.setState({
+      playSound: false
+    })
   }
 
   handleTabChange = (event, value) => {
@@ -330,12 +341,26 @@ class App extends Component {
     })
   }
 
+  getSound = () => {
+    if (this.state.playSound) {
+      return (
+        <Sound 
+          url="alarm.wav"
+          playStatus={Sound.status.PLAYING}
+           />
+      )
+    } else {
+      return null;
+    }
+  }
+
   render() {
     //console.log(`url(${backgroundImages[this.state.imageNum]})`)
     return (
       <Fade in={this.state.screenAvailable}>
         <div className="App" style={{backgroundImage: `url(${backgroundImages[this.state.imageNum]})`, minWidth: 1000}}>
           {this.getSnackBar()}
+          {this.getSound()}
           <Dialog
             open={this.state.dialogOpen}>
             <DialogTitle>New time</DialogTitle>
@@ -403,7 +428,7 @@ class App extends Component {
             Solanum
           </div>
           <div style={{margin: 10}}>
-            <i>Solanum lycopersicum</i>. A better Pomodoro. 🍅
+            <i>Solanum lycopersicum</i>. Latin for <i>tomato</i>. Pomodoro. 🍅
           </div>
           <Tabs 
             className="Tabs"
@@ -423,7 +448,6 @@ class App extends Component {
             spacing={0}
             direction="column"
             alignItems="center"
-            justify="center"
             style={{marginTop: 10}}>
             <Paper className="Timer" style={{paddingLeft: 25, paddingRight: 30, paddingBottom: 10}}>
               {this.getMinutesDisplay()}
